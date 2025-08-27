@@ -1,8 +1,11 @@
 package com.example.notes.navigation
 
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
@@ -37,6 +40,24 @@ fun NavigationRoot(
             rememberViewModelStoreNavEntryDecorator(),
             rememberSceneSetupNavEntryDecorator()
         ),
+        transitionSpec = {
+            slideInHorizontally(
+                initialOffsetX = { fullWidth -> fullWidth },
+                animationSpec = tween(500)
+            ) togetherWith slideOutHorizontally(
+                targetOffsetX = { fullWidth -> -fullWidth },
+                animationSpec = tween(500)
+            )
+        },
+        popTransitionSpec = {
+            slideInHorizontally(
+                initialOffsetX = { fullWidth -> -fullWidth },
+                animationSpec = tween(500)
+            ) togetherWith slideOutHorizontally(
+                targetOffsetX = { fullWidth -> fullWidth },
+                animationSpec = tween(500)
+            )
+        },
         entryProvider = { key ->
             when(key) {
                 is NotesListScreen -> {
