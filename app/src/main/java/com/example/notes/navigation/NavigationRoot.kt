@@ -6,6 +6,7 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.NavKey
@@ -13,6 +14,7 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSavedStateNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import androidx.navigation3.ui.rememberSceneSetupNavEntryDecorator
+import com.example.notes.data.NoteDatabaseProvider
 import com.example.notes.ui.notedetail.NoteDetailScreenUi
 import com.example.notes.ui.notedetail.NoteDetailViewModel
 import com.example.notes.ui.noteslist.NotesListScreenUi
@@ -24,13 +26,17 @@ import kotlinx.serialization.Serializable
 data object NotesListScreen: NavKey
 
 @Serializable
-data class NoteDetailScreen(val id: Int): NavKey
+data class NoteDetailScreen(val id: Int?): NavKey
 
 @Composable
 fun NavigationRoot(
     modifier: Modifier = Modifier
 ){
     val backStack = rememberNavBackStack(NotesListScreen)
+
+    val context = LocalContext.current.applicationContext
+    val db = NoteDatabaseProvider.get(context)
+    val dao = db.noteDao()
 
     NavDisplay(
         backStack = backStack,
@@ -63,7 +69,12 @@ fun NavigationRoot(
                 is NotesListScreen -> {
                     NavEntry(key = key){
                         NotesListScreenUi(
-                            viewModel = NotesListViewModel(),
+                            viewModel = NotesListViewModel(
+                                dao = dao
+                            ),
+                            onNoteAddClick = {
+                                backStack.add(NoteDetailScreen(null))
+                            },
                             onNoteClick = { noteId ->
                                 backStack.add(NoteDetailScreen(noteId))
                             }
@@ -73,7 +84,10 @@ fun NavigationRoot(
                 is NoteDetailScreen -> {
                     NavEntry(key = key){
                         NoteDetailScreenUi(
-                            viewModel = NoteDetailViewModel(key.id)
+                            viewModel = NoteDetailViewModel(
+                                dao = dao,
+                                noteId = key.id
+                            )
                         )
                     }
                 }

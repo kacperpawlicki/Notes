@@ -1,5 +1,6 @@
 package com.example.notes.ui.notedetail
 
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,6 +20,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
@@ -27,7 +29,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -35,7 +38,10 @@ fun NoteDetailScreenUi(
     modifier: Modifier = Modifier,
     viewModel: NoteDetailViewModel,
 ) {
-    val noteState by viewModel.noteState.collectAsStateWithLifecycle()
+
+    val note by viewModel.note.collectAsState()
+
+
 
     Scaffold(
         modifier = modifier,
@@ -43,8 +49,8 @@ fun NoteDetailScreenUi(
             TopAppBar(
                 title = {
                     BasicTextField(
-                        value = noteState.title,
-                        onValueChange = { viewModel.updateTitle(it) },
+                        value = note.title,
+                        onValueChange = { viewModel.updateNoteTitle(it) },
                         modifier = Modifier.fillMaxWidth(),
                         textStyle = TextStyle(
                             fontSize = 21.sp,
@@ -58,7 +64,7 @@ fun NoteDetailScreenUi(
                         ),
                         decorationBox = { innerTextField ->
                             Box(modifier = Modifier.padding(16.dp)) {
-                                if (noteState.title.isEmpty()) {
+                                if (note.title.isEmpty()) {
                                     Text(
                                         "Tytuł",
                                         style = TextStyle(
@@ -75,7 +81,11 @@ fun NoteDetailScreenUi(
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = {}
+                        onClick = {
+                            viewModel.viewModelScope.launch {
+                                viewModel.saveNote()
+                            }
+                        }
                     ) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
@@ -85,7 +95,11 @@ fun NoteDetailScreenUi(
                 },
                 actions = {
                     IconButton(
-                        onClick = {}
+                        onClick = {
+                            viewModel.viewModelScope.launch {
+                                viewModel.deleteNote()
+                            }
+                        }
                     ) {
                         Icon(
                             imageVector = Icons.Default.MoreVert,
@@ -107,9 +121,9 @@ fun NoteDetailScreenUi(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(16.dp),
-                value = noteState.content,
+                value = note.content,
                 onValueChange = { newContent ->
-                    viewModel.updateContent(newContent)
+                    viewModel.updateNoteContent(newContent)
                 },
                 singleLine = false,
                 maxLines = Int.MAX_VALUE,

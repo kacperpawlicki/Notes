@@ -28,6 +28,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -40,8 +41,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -49,11 +48,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 fun NotesListScreenUi(
     modifier: Modifier = Modifier,
     viewModel: NotesListViewModel,
-    onNoteClick: (Int) -> Unit
+    onNoteClick: (Int) -> Unit,
+    onNoteAddClick: () -> Unit
 ) {
-    val notes by viewModel.notes.collectAsStateWithLifecycle()
+    val notes by viewModel.notes.collectAsState(initial = emptyList())
 
     val listState = rememberLazyGridState()
+
     val fabVisible by remember {
         derivedStateOf {
             !listState.isScrollInProgress
@@ -99,7 +100,9 @@ fun NotesListScreenUi(
                 exit = fadeOut()
             ) {
                 FloatingActionButton(
-                    onClick = {},
+                    onClick = {
+                        onNoteAddClick()
+                    },
 
                     ) {
                     Icon(
@@ -133,7 +136,7 @@ fun NotesListScreenUi(
                             .clickable {
                                 if (!isNavigating) {
                                     isNavigating = true
-                                    onNoteClick(note.id)
+                                    note.id?.let { onNoteClick(it) }
                                 }
                             }
                     ) {
