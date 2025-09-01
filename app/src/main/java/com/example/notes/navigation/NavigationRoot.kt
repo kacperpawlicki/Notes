@@ -86,7 +86,10 @@ fun NavigationRoot(
                         NoteDetailScreenUi(
                             viewModel = NoteDetailViewModel(
                                 dao = dao,
-                                noteId = key.id
+                                noteId = key.id,
+                                onNavigateBack = {
+                                    backStack.removeAt(backStack.lastIndex)
+                                }
                             )
                         )
                     }

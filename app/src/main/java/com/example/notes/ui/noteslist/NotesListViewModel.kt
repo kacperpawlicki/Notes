@@ -7,7 +7,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 class NotesListViewModel(
-    private val dao: NoteDao
+    val dao: NoteDao
 ): ViewModel() {
 
     val notes = dao.getAllNotesOrderedByModDate()
@@ -22,15 +22,15 @@ class NotesListViewModel(
 
     fun getTitleText(note: Note): String {
         if (note.title == "") {
-            return "Notatka tekstowa z dnia ${note.creationDate.dayOfMonth}." +
-                    "${note.creationDate.format(DateTimeFormatter.ofPattern("MM"))}"
+            return "Notatka tekstowa z dnia " +
+                    "${note.creationDate.format(DateTimeFormatter.ofPattern("dd.MM"))}"
         }
         return note.title
     }
 
     fun getModificationTimeText(note: Note): String {
         if (note.modificationDate.toLocalDate().equals(LocalDate.now())) {
-            return "${note.modificationDate.hour}:${note.modificationDate.minute}"
+            return "${note.modificationDate.format(DateTimeFormatter.ofPattern("HH:mm"))}"
         }
         return "${note.modificationDate.dayOfMonth} ${monthsPolish.getOrNull(note.modificationDate.monthValue-1)}"
     }

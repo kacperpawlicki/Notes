@@ -119,9 +119,9 @@ fun NotesListScreenUi(
             columns = GridCells.Fixed(2),
             modifier = Modifier
                 .padding(innerPadding),
-            contentPadding = PaddingValues(8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(18.dp),
+            contentPadding = PaddingValues(16.dp, 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
             state = listState
         ) {
             items(notes) { note ->
@@ -133,6 +133,7 @@ fun NotesListScreenUi(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(225.dp)
+                            .padding(vertical = 3.dp)
                             .clickable {
                                 if (!isNavigating) {
                                     isNavigating = true
