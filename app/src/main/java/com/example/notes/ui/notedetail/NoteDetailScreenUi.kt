@@ -3,13 +3,14 @@ package com.example.notes.ui.notedetail
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicTextField
@@ -30,6 +31,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -127,19 +130,27 @@ fun NoteDetailScreenUi(
             HorizontalDivider()
 
             val scrollState = rememberScrollState()
+            val focusRequester = FocusRequester()
 
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .verticalScroll(scrollState)
+                    .clickable(
+                        indication = null,
+                        interactionSource = null
+                    ) {
+                        focusRequester.requestFocus()
+                    }
             ) {
-                Spacer(modifier = modifier.height(16.dp),)
+                Spacer(modifier = modifier.height(16.dp))
 
                 BasicTextField(
                     modifier = Modifier
                         .fillMaxSize()
-                        .fillMaxHeight()
-                        .padding(horizontal = 16.dp),
+                        .padding(horizontal = 16.dp)
+                        .imePadding()
+                        .focusRequester(focusRequester),
                     value = note.content,
                     onValueChange = { newContent ->
                         viewModel.updateNoteContent(newContent)
