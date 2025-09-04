@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.notes.data.Note
 import com.example.notes.data.NoteDao
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -36,28 +35,27 @@ class NoteDetailViewModel(
         dao.upsertNote(_note.value)
     }
 
-    //chwilowo
-    fun deleteNote() {
-        viewModelScope.launch {
-            dao.deleteNote(_note.value)
-            delay(50)
-            onNavigateBack()
-        }
-    }
 
+    var noteStarted = false
     fun saveAndNavigateBack() {
-        viewModelScope.launch {
-            saveNote()
+        if (noteStarted) {
+            viewModelScope.launch {
+                saveNote()
+                onNavigateBack()
+            }
+        } else {
             onNavigateBack()
         }
     }
 
     fun updateNoteContent(newContent: String) {
         _note.value = _note.value.copy(content = newContent)
+        noteStarted = true
     }
 
     fun updateNoteTitle(newTitle: String) {
         _note.value = _note.value.copy(title = newTitle)
+        noteStarted = true
     }
 
     fun updateModificationDate() {

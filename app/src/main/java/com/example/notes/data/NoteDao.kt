@@ -14,6 +14,9 @@ interface NoteDao {
     @Delete
     suspend fun deleteNote(note: Note)
 
+    @Delete
+    suspend fun deleteNotes(notes: List<Note>)
+
     @Query("SELECT * FROM note ORDER BY modificationDate DESC")
     fun getAllNotesOrderedByModDate(): Flow<List<Note>>
 

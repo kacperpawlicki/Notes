@@ -1,10 +1,12 @@
 package com.example.notes.ui.noteslist
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,10 +18,14 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Card
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -27,6 +33,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
@@ -36,6 +44,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -63,8 +72,37 @@ fun NotesListScreenUi(
 
     var isNavigating by remember { mutableStateOf(false) }
 
+    var isDeleting by remember { mutableStateOf(false) }
+
+    var isDeletingConfirmationDialogVisible by remember { mutableStateOf(false) }
+
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+
+
+
+    BackHandler {
+        if (isDeleting) {
+            isDeleting = false
+        } else {
+            viewModel.navigateBack()
+        }
+    }
+
+    if (isDeletingConfirmationDialogVisible) {
+        DeleteConfirmationDialog(
+            onDismiss = { isDeletingConfirmationDialogVisible = false },
+            onConfirm = {
+                viewModel.deleteSelectedNotes()
+                isDeleting = false
+                isDeletingConfirmationDialogVisible = false
+            },
+            amount = viewModel.getSelectedNotesCount()
+        )
+    }
+
     Scaffold(
-        modifier = modifier,
+        modifier = modifier
+            .nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
@@ -90,26 +128,51 @@ fun NotesListScreenUi(
                             contentDescription = "Więcej opcji"
                         )
                     }
-                }
+                },
+                scrollBehavior = scrollBehavior
             )
         },
         floatingActionButton = {
-            AnimatedVisibility(
-                visible = fabVisible,
-                enter = fadeIn(),
-                exit = fadeOut()
-            ) {
-                FloatingActionButton(
-                    onClick = {
-                        onNoteAddClick()
-                    },
+            if (!isDeleting) {
+                AnimatedVisibility(
+                    visible = fabVisible,
+                    enter = fadeIn(),
+                    exit = fadeOut()
+                ) {
+                    FloatingActionButton(
+                        onClick = {
+                            onNoteAddClick()
+                        },
 
-                    ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = "Utwórz nową notatkę"
-                    )
+                        ) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = "Utwórz nową notatkę"
+                        )
+                    }
                 }
+            }
+        },
+        bottomBar = {
+            if (isDeleting) {
+                BottomAppBar(
+                    content = {
+                        IconButton(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            onClick = {
+                                isDeletingConfirmationDialogVisible = true
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = "Usuń wybrane notatki"
+                            )
+                        }
+                    },
+                    modifier = Modifier
+                        .height(120.dp)
+                )
             }
 
         }
@@ -129,27 +192,58 @@ fun NotesListScreenUi(
                     horizontalAlignment = Alignment.CenterHorizontally
 
                 ) {
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(225.dp)
-                            .padding(vertical = 3.dp)
-                            .clickable {
-                                if (!isNavigating) {
-                                    isNavigating = true
-                                    note.id?.let { onNoteClick(it) }
-                                }
-                            }
-                    ) {
-                        Text(
-                            text = note.content,
-                            modifier = Modifier.padding(12.dp)
-                        )
+
+
+                    Box {
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(225.dp)
+                                .padding(vertical = 3.dp)
+                                .combinedClickable(
+                                    onClick = {
+                                        if (isDeleting) {
+                                            viewModel.toggleSelection(note)
+                                        } else if (!isNavigating) {
+                                            isNavigating = true
+                                            note.id?.let { onNoteClick(it) }
+                                        }
+                                    },
+                                    onLongClick = {
+                                        if (!isDeleting) {
+                                            isDeleting = true
+                                            viewModel.toggleSelection(note)
+                                        } else {
+                                            viewModel.clearSelected()
+                                            isDeleting = false
+                                        }
+                                    }
+                                )
+                        ) {
+                            Text(
+                                text = note.content,
+                                modifier = Modifier.padding(12.dp)
+                            )
+                        }
+
+                        if (isDeleting) {
+                            Checkbox(
+                                checked = note in viewModel.selectedNotes,
+                                onCheckedChange = {
+                                    viewModel.toggleSelection(note)
+                                },
+                                modifier = Modifier
+                                    .align(Alignment.TopEnd)
+                            )
+                        }
+
                     }
+
                     Text(
                         text = viewModel.getTitleText(note),
                         textAlign = TextAlign.Center
                     )
+
                     Text(
                         text = viewModel.getModificationTimeText(note),
                         textAlign = TextAlign.Center,
@@ -163,5 +257,29 @@ fun NotesListScreenUi(
             }
         }
     }
+}
+
+
+@Composable
+fun DeleteConfirmationDialog(onDismiss: () -> Unit, onConfirm: () -> Unit, amount: Int){
+    AlertDialog(
+        onDismissRequest = { onDismiss() },
+        title = {
+            Text(text = "Potwierdzenie")
+        },
+        text = {
+            Text("Czy na pewno chcesz usunąć notatki? ($amount)")
+        },
+        confirmButton = {
+            TextButton(onClick = { onConfirm() }) {
+                Text("Usuń")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = { onDismiss() }) {
+                Text("Anuluj")
+            }
+        }
+    )
 }
 

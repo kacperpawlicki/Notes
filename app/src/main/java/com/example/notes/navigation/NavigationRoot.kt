@@ -70,7 +70,10 @@ fun NavigationRoot(
                     NavEntry(key = key){
                         NotesListScreenUi(
                             viewModel = NotesListViewModel(
-                                dao = dao
+                                dao = dao,
+                                onNavigateBack = {
+                                    backStack.removeAt(backStack.lastIndex)
+                                }
                             ),
                             onNoteAddClick = {
                                 backStack.add(NoteDetailScreen(null))

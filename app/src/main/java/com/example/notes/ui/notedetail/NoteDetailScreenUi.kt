@@ -4,11 +4,17 @@ package com.example.notes.ui.notedetail
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
@@ -100,11 +106,7 @@ fun NoteDetailScreenUi(
                 },
                 actions = {
                     IconButton(
-                        onClick = {
-                            viewModel.viewModelScope.launch {
-                                viewModel.deleteNote()
-                            }
-                        }
+                        onClick = {}
                     ) {
                         Icon(
                             imageVector = Icons.Default.MoreVert,
@@ -115,33 +117,45 @@ fun NoteDetailScreenUi(
             )
         }
     ) { innerPadding ->
-        Box(
+
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
                 .background(MaterialTheme.colorScheme.surface)
         ) {
             HorizontalDivider()
-            BasicTextField(
+
+            val scrollState = rememberScrollState()
+
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(16.dp),
-                value = note.content,
-                onValueChange = { newContent ->
-                    viewModel.updateNoteContent(newContent)
-                },
-                singleLine = false,
-                maxLines = Int.MAX_VALUE,
-                textStyle = TextStyle(
-                    fontSize = 18.sp,
-                    color = MaterialTheme.colorScheme.onSurface,
-                ),
-                cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
-                keyboardOptions = KeyboardOptions(
-                    capitalization = KeyboardCapitalization.Sentences
-                ),
-            )
-        }
+                    .verticalScroll(scrollState)
+            ) {
+                Spacer(modifier = modifier.height(16.dp),)
 
+                BasicTextField(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .fillMaxHeight()
+                        .padding(horizontal = 16.dp),
+                    value = note.content,
+                    onValueChange = { newContent ->
+                        viewModel.updateNoteContent(newContent)
+                    },
+                    singleLine = false,
+                    maxLines = Int.MAX_VALUE,
+                    textStyle = TextStyle(
+                        fontSize = 18.sp,
+                        color = MaterialTheme.colorScheme.onSurface,
+                    ),
+                    cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
+                    keyboardOptions = KeyboardOptions(
+                        capitalization = KeyboardCapitalization.Sentences
+                    ),
+                )
+            }
+        }
     }
 }
