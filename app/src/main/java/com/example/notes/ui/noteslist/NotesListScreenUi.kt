@@ -58,7 +58,8 @@ fun NotesListScreenUi(
     modifier: Modifier = Modifier,
     viewModel: NotesListViewModel,
     onNoteClick: (Int) -> Unit,
-    onNoteAddClick: () -> Unit
+    onNoteAddClick: () -> Unit,
+    onSearchClick: () -> Unit
 ) {
     val notes by viewModel.notes.collectAsState(initial = emptyList())
 
@@ -113,7 +114,9 @@ fun NotesListScreenUi(
                 },
                 actions = {
                     IconButton(
-                        onClick = {}
+                        onClick = {
+                            onSearchClick()
+                        }
                     ) {
                         Icon(
                             imageVector = Icons.Default.Search,
