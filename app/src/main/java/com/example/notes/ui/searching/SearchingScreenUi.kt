@@ -32,17 +32,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewModelScope
+import com.example.notes.ui.components.HighlightedText
 import kotlinx.coroutines.launch
 
 
@@ -51,7 +48,7 @@ import kotlinx.coroutines.launch
 fun SearchingScreenUi(
     modifier: Modifier = Modifier,
     viewModel: SearchingViewModel,
-    onNoteClick: (Int) -> Unit,
+    onNoteClick: (Int, String) -> Unit,
 ) {
     val notes by viewModel.notes.collectAsState(initial = emptyList())
 
@@ -138,6 +135,7 @@ fun SearchingScreenUi(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Box {
+
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -146,7 +144,7 @@ fun SearchingScreenUi(
                                 .clickable(
                                     onClick = {
                                         if (!isNavigating) {
-                                            note.id?.let { onNoteClick(it) }
+                                            note.id?.let { onNoteClick(it, query) }
                                             isNavigating = true
                                         }
                                     }
@@ -164,7 +162,6 @@ fun SearchingScreenUi(
                     HighlightedText(
                         fullText = viewModel.getTitleText(note),
                         query = query,
-                        modifier = modifier.align(Alignment.CenterHorizontally)
                     )
 
                     Text(
@@ -182,45 +179,3 @@ fun SearchingScreenUi(
     }
 }
 
-@Composable
-fun HighlightedText(fullText: String, query: String, modifier: Modifier) {
-    if (query.isEmpty()) {
-        Text(
-            text = fullText,
-            modifier = modifier
-        )
-        return
-    }
-
-    val annotatedText = buildAnnotatedString {
-        val lowerFull = fullText.lowercase()
-        val lowerQuery = query.lowercase()
-
-        var startIndex = 0
-        var index = lowerFull.indexOf(lowerQuery, startIndex)
-
-        while (index >= 0) {
-            append(fullText.substring(startIndex, index))
-
-            withStyle(
-                SpanStyle(
-                    background = Color.Red
-                )
-            ) {
-                append(fullText.substring(index, index + query.length))
-            }
-
-            startIndex = index + query.length
-            index = lowerFull.indexOf(lowerQuery, startIndex)
-        }
-
-        if (startIndex < fullText.length) {
-            append(fullText.substring(startIndex))
-        }
-    }
-
-    Text(
-        text = annotatedText,
-        modifier = modifier
-    )
-}

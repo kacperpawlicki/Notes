@@ -21,6 +21,8 @@ import com.example.notes.ui.noteslist.NotesListScreenUi
 import com.example.notes.ui.noteslist.NotesListViewModel
 import com.example.notes.ui.searching.SearchingScreenUi
 import com.example.notes.ui.searching.SearchingViewModel
+import com.example.notes.ui.searchresultnotedetail.SearchResultNoteDetailScreenUi
+import com.example.notes.ui.searchresultnotedetail.SearchResultNoteDetailViewModel
 import kotlinx.serialization.Serializable
 
 
@@ -30,6 +32,8 @@ data object NotesListScreen: NavKey
 @Serializable
 data class NoteDetailScreen(val id: Int?): NavKey
 
+@Serializable
+data class SearchResultNoteDetailScreen(val id: Int, val query: String): NavKey
 @Serializable
 data object SearchingScreen: NavKey
 
@@ -114,8 +118,25 @@ fun NavigationRoot(
                                     backStack.removeAt(backStack.lastIndex)
                                 }
                             ),
-                            onNoteClick = { noteId ->
-                                backStack.add(NoteDetailScreen(noteId))
+                            onNoteClick = { noteId, query ->
+                                backStack.add(SearchResultNoteDetailScreen(noteId, query))
+                            }
+                        )
+                    }
+                }
+                is SearchResultNoteDetailScreen -> {
+                    NavEntry(key = key) {
+                        SearchResultNoteDetailScreenUi(
+                            viewModel = SearchResultNoteDetailViewModel(
+                                dao = dao,
+                                noteId = key.id,
+                                onNavigateBack = {
+                                    backStack.removeAt(backStack.lastIndex)
+                                }
+                            ),
+                            query = key.query,
+                            onNoteEditClick = {
+                                backStack.add(NoteDetailScreen(key.id))
                             }
                         )
                     }
