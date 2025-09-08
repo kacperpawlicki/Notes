@@ -62,17 +62,21 @@ class NoteDetailViewModel(
         _note.value = _note.value.copy(content = newContent)
         noteStarted = true
 
-        viewModelScope.launch {
-            dao.upsertNote(_note.value)
+        if (noteId != null) {
+            viewModelScope.launch {
+                dao.upsertNote(_note.value)
+            }
         }
     }
-
+//TODO do zmiany - przy nowej notatce nie przezyje rotacji ekranu
     fun updateNoteTitle(newTitle: String) {
         _note.value = _note.value.copy(title = newTitle)
         noteStarted = true
 
-        viewModelScope.launch {
-            dao.upsertNote(_note.value)
+        if (noteId != null) {
+            viewModelScope.launch {
+                dao.upsertNote(_note.value)
+            }
         }
     }
 

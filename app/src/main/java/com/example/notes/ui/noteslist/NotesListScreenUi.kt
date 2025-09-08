@@ -12,13 +12,16 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
@@ -41,6 +44,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,6 +54,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -65,9 +70,18 @@ fun NotesListScreenUi(
 
     val listState = rememberLazyGridState()
 
-    val fabVisible by remember {
+    val scope = rememberCoroutineScope()
+
+    val addingFabVisible by remember {
         derivedStateOf {
             !listState.isScrollInProgress
+        }
+    }
+
+    val scrollUpFabVisible by remember {
+        derivedStateOf {
+            !(listState.firstVisibleItemIndex == 0 &&
+                    listState.firstVisibleItemScrollOffset == 0)
         }
     }
 
@@ -138,7 +152,7 @@ fun NotesListScreenUi(
         floatingActionButton = {
             if (!isDeleting) {
                 AnimatedVisibility(
-                    visible = fabVisible,
+                    visible = addingFabVisible,
                     enter = fadeIn(),
                     exit = fadeOut()
                 ) {
@@ -180,82 +194,111 @@ fun NotesListScreenUi(
 
         }
     ) { innerPadding ->
+        Box {
 
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            modifier = Modifier
-                .padding(innerPadding),
-            contentPadding = PaddingValues(16.dp, 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            state = listState
-        ) {
-            items(notes) { note ->
-                Column (
-                    horizontalAlignment = Alignment.CenterHorizontally
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                modifier = Modifier
+                    .padding(innerPadding),
+                contentPadding = PaddingValues(16.dp, 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                state = listState
+            ) {
+                items(notes) { note ->
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
 
-                ) {
+                    ) {
 
 
-                    Box {
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(225.dp)
-                                .padding(vertical = 3.dp)
-                                .combinedClickable(
-                                    onClick = {
-                                        if (isDeleting) {
-                                            viewModel.toggleSelection(note)
-                                        } else if (!isNavigating) {
-                                            isNavigating = true
-                                            note.id?.let { onNoteClick(it) }
-                                        }
-                                    },
-                                    onLongClick = {
-                                        if (!isDeleting) {
-                                            isDeleting = true
-                                            viewModel.toggleSelection(note)
-                                        } else {
-                                            viewModel.clearSelected()
-                                            isDeleting = false
-                                        }
-                                    }
-                                )
-                        ) {
-                            Text(
-                                text = note.content,
-                                modifier = Modifier.padding(12.dp)
-                            )
-                        }
-
-                        if (isDeleting) {
-                            Checkbox(
-                                checked = note in viewModel.selectedNotes,
-                                onCheckedChange = {
-                                    viewModel.toggleSelection(note)
-                                },
+                        Box {
+                            Card(
                                 modifier = Modifier
-                                    .align(Alignment.TopEnd)
-                            )
+                                    .fillMaxWidth()
+                                    .height(225.dp)
+                                    .padding(vertical = 3.dp)
+                                    .combinedClickable(
+                                        onClick = {
+                                            if (isDeleting) {
+                                                viewModel.toggleSelection(note)
+                                            } else if (!isNavigating) {
+                                                isNavigating = true
+                                                note.id?.let { onNoteClick(it) }
+                                            }
+                                        },
+                                        onLongClick = {
+                                            if (!isDeleting) {
+                                                isDeleting = true
+                                                viewModel.toggleSelection(note)
+                                            } else {
+                                                viewModel.clearSelected()
+                                                isDeleting = false
+                                            }
+                                        }
+                                    )
+                            ) {
+                                Text(
+                                    text = note.content,
+                                    modifier = Modifier.padding(12.dp)
+                                )
+                            }
+
+                            if (isDeleting) {
+                                Checkbox(
+                                    checked = note in viewModel.selectedNotes,
+                                    onCheckedChange = {
+                                        viewModel.toggleSelection(note)
+                                    },
+                                    modifier = Modifier
+                                        .align(Alignment.TopEnd)
+                                )
+                            }
+
                         }
 
+                        Text(
+                            text = viewModel.getTitleText(note),
+                            textAlign = TextAlign.Center
+                        )
+
+                        Text(
+                            text = viewModel.getModificationTimeText(note),
+                            textAlign = TextAlign.Center,
+                            style = TextStyle(
+                                fontSize = 15.sp,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                            ),
+                            modifier = Modifier.padding(vertical = 6.dp)
+                        )
                     }
+                }
+            }
 
-                    Text(
-                        text = viewModel.getTitleText(note),
-                        textAlign = TextAlign.Center
-                    )
-
-                    Text(
-                        text = viewModel.getModificationTimeText(note),
-                        textAlign = TextAlign.Center,
-                        style = TextStyle(
-                            fontSize = 15.sp,
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                        ),
-                        modifier = Modifier.padding(vertical = 6.dp)
-                    )
+            AnimatedVisibility(
+                visible = scrollUpFabVisible,
+                enter = fadeIn(),
+                exit = fadeOut(),
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .padding(16.dp)
+                    .align(Alignment.BottomCenter)
+            ) {
+                FloatingActionButton(
+                    onClick = {
+                        scope.launch {
+                            listState.animateScrollToItem(0)
+                        }
+                    },
+                    shape = CircleShape,
+                    modifier = Modifier
+                        .size(40.dp),
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.KeyboardArrowUp,
+                            contentDescription = "Podjedź do góry",
+                        )
                 }
             }
         }
