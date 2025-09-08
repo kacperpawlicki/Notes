@@ -7,6 +7,7 @@ import com.example.notes.data.NoteDao
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 
@@ -23,9 +24,8 @@ class NoteDetailViewModel(
     init {
         if (noteId != null) {
             viewModelScope.launch {
-                dao.getNoteById(noteId).collect { loadedNote ->
-                    _note.value = loadedNote
-                }
+                val loadedNote = dao.getNoteById(noteId).first()
+                _note.value = loadedNote
             }
         }
     }
@@ -51,11 +51,19 @@ class NoteDetailViewModel(
     fun updateNoteContent(newContent: String) {
         _note.value = _note.value.copy(content = newContent)
         noteStarted = true
+
+        viewModelScope.launch {
+            dao.upsertNote(_note.value)
+        }
     }
 
     fun updateNoteTitle(newTitle: String) {
         _note.value = _note.value.copy(title = newTitle)
         noteStarted = true
+
+        viewModelScope.launch {
+            dao.upsertNote(_note.value)
+        }
     }
 
     fun updateModificationDate() {

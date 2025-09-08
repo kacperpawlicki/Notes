@@ -1,31 +1,33 @@
 package com.example.notes.ui.searching
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.notes.data.Note
 import com.example.notes.data.NoteDao
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 class SearchingViewModel(
     private val dao: NoteDao,
     private val onNavigateBack: () -> Unit
-): ViewModel() {
+): ViewModel(){
 
-    var notes: Flow<List<Note>> = dao.searchNotes("")
+    private val _notes = MutableStateFlow<List<Note>>(emptyList())
+    val notes: StateFlow<List<Note>> = _notes.asStateFlow()
 
-    var query by mutableStateOf("")
-        private set
-
-    fun onQueryChange(newQuery: String) {
-        query = newQuery
-        getSearchResults(newQuery)
+    init {
+        searchNotes("")
     }
-    fun getSearchResults(query: String) {
-        notes = dao.searchNotes(query)
+    fun searchNotes(query: String) {
+        viewModelScope.launch {
+            dao.searchNotes(query).collect { notesList ->
+                _notes.value = notesList
+            }
+        }
     }
 
     fun navigateBack() {

@@ -24,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.notes.data.Note
 import com.example.notes.ui.components.HighlightedText
@@ -52,7 +53,8 @@ fun SearchResultNoteDetailScreenUi(
                     } else {
                         HighlightedText(
                             fullText = note.title,
-                            query = query
+                            query = query,
+                            textAlign = TextAlign.Left
                         )
                     }
                 },
@@ -112,7 +114,8 @@ fun SearchResultNoteDetailScreenUi(
                     query = query,
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(horizontal = 16.dp)
+                        .padding(horizontal = 16.dp),
+                    textAlign = TextAlign.Left
                 )
 
 //                textStyle = TextStyle(
