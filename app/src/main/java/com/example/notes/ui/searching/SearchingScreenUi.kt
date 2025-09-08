@@ -42,6 +42,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewModelScope
 import com.example.notes.ui.components.HighlightedText
 import kotlinx.coroutines.launch
@@ -64,10 +67,21 @@ fun SearchingScreenUi(
 
     val focusRequester = remember { FocusRequester() }
 
-    LaunchedEffect(Unit) {
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+    var refreshTrigger by remember { mutableStateOf(0) }
+
+    LaunchedEffect(lifecycleOwner) {
+        lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+            refreshTrigger++
+        }
+    }
+
+    LaunchedEffect(refreshTrigger) {
         focusRequester.requestFocus()
         viewModel.searchNotes(query)
     }
+
 
     Scaffold(
         modifier = modifier,
