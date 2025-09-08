@@ -14,7 +14,8 @@ import java.time.LocalDateTime
 class NoteDetailViewModel(
     private val noteId: Int?,
     private val dao: NoteDao,
-    private val onNavigateBack: () -> Unit
+    private val onNavigateBack: () -> Unit,
+    private val from: String
 ): ViewModel() {
 
     private val _note = MutableStateFlow(Note.empty())
@@ -35,16 +36,25 @@ class NoteDetailViewModel(
         dao.upsertNote(_note.value)
     }
 
+    fun navigateBack() {
+        when (from) {
+            "NotesListScreen" -> onNavigateBack()
+            "SearchResultScreen" -> {
+                onNavigateBack()
+                onNavigateBack()
+            }
+        }
+    }
 
     var noteStarted = false
     fun saveAndNavigateBack() {
         if (noteStarted) {
             viewModelScope.launch {
                 saveNote()
-                onNavigateBack()
+                navigateBack()
             }
         } else {
-            onNavigateBack()
+            navigateBack()
         }
     }
 

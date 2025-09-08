@@ -28,8 +28,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -37,8 +39,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -63,13 +67,25 @@ fun SearchingScreenUi(
 
     var isNavigating by remember { mutableStateOf(false) }
 
-    var query by rememberSaveable { mutableStateOf("") }
+    val textFieldValueSaver = Saver<TextFieldValue, String>(
+        save = { it.text },
+        restore = { restoredText ->
+            TextFieldValue(
+                text = restoredText,
+                selection = TextRange(restoredText.length)
+            )
+        }
+    )
+
+    var query by rememberSaveable(stateSaver = textFieldValueSaver) {
+        mutableStateOf(TextFieldValue(""))
+    }
 
     val focusRequester = remember { FocusRequester() }
 
 
     val lifecycleOwner = LocalLifecycleOwner.current
-    var refreshTrigger by remember { mutableStateOf(0) }
+    var refreshTrigger by remember { mutableIntStateOf(0) }
 
     LaunchedEffect(lifecycleOwner) {
         lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
@@ -79,7 +95,7 @@ fun SearchingScreenUi(
 
     LaunchedEffect(refreshTrigger) {
         focusRequester.requestFocus()
-        viewModel.searchNotes(query)
+        viewModel.searchNotes(query.text)
     }
 
 
@@ -92,7 +108,7 @@ fun SearchingScreenUi(
                         value = query,
                         onValueChange = {
                             query = it
-                            viewModel.searchNotes(query)
+                            viewModel.searchNotes(query.text)
                         },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -106,7 +122,7 @@ fun SearchingScreenUi(
                         cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
                         decorationBox = { innerTextField ->
                             Box(modifier = Modifier.padding(16.dp)) {
-                                if (query.isEmpty()) {
+                                if (query.text.isEmpty()) {
                                     Text(
                                         "Wyszukaj...",
                                         style = TextStyle(
@@ -172,7 +188,7 @@ fun SearchingScreenUi(
                                 .clickable(
                                     onClick = {
                                         if (!isNavigating) {
-                                            note.id?.let { onNoteClick(it, query) }
+                                            note.id?.let { onNoteClick(it, query.text) }
                                             isNavigating = true
                                         }
                                     }
@@ -180,9 +196,12 @@ fun SearchingScreenUi(
                         ) {
                             HighlightedText(
                                 fullText = note.content,
-                                query = query,
+                                query = query.text,
                                 modifier = Modifier.padding(12.dp),
-                                textAlign = TextAlign.Left
+                                textAlign = TextAlign.Left,
+                                fontWeight = FontWeight.Normal,
+                                fontSize = 16.sp,
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                         }
 
@@ -190,8 +209,11 @@ fun SearchingScreenUi(
 
                     HighlightedText(
                         fullText = viewModel.getTitleText(note),
-                        query = query,
-                        textAlign = TextAlign.Center
+                        query = query.text,
+                        textAlign = TextAlign.Center,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Normal,
+                        color = MaterialTheme.colorScheme.onSurface
                     )
 
                     Text(

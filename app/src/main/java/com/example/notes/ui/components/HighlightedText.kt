@@ -6,11 +6,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.TextUnit
 
 @Composable
-fun HighlightedText(fullText: String, query: String, modifier: Modifier = Modifier, textAlign: TextAlign) {
+fun HighlightedText(
+    fullText: String,
+    query: String,
+    modifier: Modifier = Modifier,
+    textAlign: TextAlign,
+    fontWeight: FontWeight,
+    color: Color,
+    fontSize: TextUnit
+) {
+
     if (query.isEmpty()) {
         Text(
             text = fullText,
@@ -49,6 +60,10 @@ fun HighlightedText(fullText: String, query: String, modifier: Modifier = Modifi
     Text(
         text = annotatedText,
         modifier = modifier,
-        textAlign = textAlign
+        textAlign = textAlign,
+        fontWeight = fontWeight,
+        color = color,
+        fontSize = fontSize
     )
 }
+

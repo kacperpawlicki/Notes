@@ -24,8 +24,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.notes.data.Note
 import com.example.notes.ui.components.HighlightedText
 
@@ -54,7 +56,10 @@ fun SearchResultNoteDetailScreenUi(
                         HighlightedText(
                             fullText = note.title,
                             query = query,
-                            textAlign = TextAlign.Left
+                            textAlign = TextAlign.Left,
+                            fontSize = 21.sp,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            fontWeight = FontWeight.SemiBold
                         )
                     }
                 },
@@ -115,14 +120,11 @@ fun SearchResultNoteDetailScreenUi(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(horizontal = 16.dp),
-                    textAlign = TextAlign.Left
+                    textAlign = TextAlign.Left,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Normal,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
-
-//                textStyle = TextStyle(
-//                    fontSize = 18.sp,
-//                    color = MaterialTheme.colorScheme.onSurface,
-//                ),
-
             }
         }
     }

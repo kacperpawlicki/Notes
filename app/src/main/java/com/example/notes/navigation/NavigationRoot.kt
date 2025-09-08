@@ -30,7 +30,7 @@ import kotlinx.serialization.Serializable
 data object NotesListScreen: NavKey
 
 @Serializable
-data class NoteDetailScreen(val id: Int?): NavKey
+data class NoteDetailScreen(val id: Int?, val from: String): NavKey
 
 @Serializable
 data class SearchResultNoteDetailScreen(val id: Int, val query: String): NavKey
@@ -85,10 +85,10 @@ fun NavigationRoot(
                                 }
                             ),
                             onNoteAddClick = {
-                                backStack.add(NoteDetailScreen(null))
+                                backStack.add(NoteDetailScreen(id = null, from = "NotesListScreen"))
                             },
                             onNoteClick = { noteId ->
-                                backStack.add(NoteDetailScreen(noteId))
+                                backStack.add(NoteDetailScreen(id = noteId, from = "NotesListScreen"))
                             },
                             onSearchClick = {
                                 backStack.add(SearchingScreen)
@@ -104,7 +104,8 @@ fun NavigationRoot(
                                 noteId = key.id,
                                 onNavigateBack = {
                                     backStack.removeAt(backStack.lastIndex)
-                                }
+                                },
+                                from = key.from
                             )
                         )
                     }
@@ -136,7 +137,7 @@ fun NavigationRoot(
                             ),
                             query = key.query,
                             onNoteEditClick = {
-                                backStack.add(NoteDetailScreen(key.id))
+                                backStack.add(NoteDetailScreen(id = key.id, from = "SearchResultScreen"))
                             }
                         )
                     }
