@@ -1,5 +1,6 @@
 package com.example.notes.ui.components
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
@@ -13,6 +14,7 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.graphics.drawscope.clipPath
+import androidx.compose.ui.graphics.graphicsLayer
 
 @Composable
 fun ThemePickerShape(
@@ -21,12 +23,23 @@ fun ThemePickerShape(
     color1: Color,
     color2: Color,
     borderColor: Color,
-    borderWidth: Dp
+    borderWidth: Dp,
+    selected: Boolean,
+    modifier: Modifier = Modifier
 ) {
-    Canvas(modifier = Modifier.size(size)) {
+    val scale = animateFloatAsState(targetValue = if (selected) 1.2f else 1f)
+
+    Canvas(
+        modifier = modifier
+            .size(size)
+            .graphicsLayer {
+                scaleX = scale.value
+                scaleY = scale.value
+            }
+    ) {
         val rect = Rect(0f, 0f, size.toPx(), size.toPx())
         val corner = cornerRadius.toPx()
-        val stroke = borderWidth.toPx()
+        val stroke = if (selected) borderWidth.toPx() * 1.5f else borderWidth.toPx()
 
         val roundRect = RoundRect(rect, corner, corner)
 

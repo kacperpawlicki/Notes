@@ -1,5 +1,6 @@
 package com.example.notes.ui.components
 
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -42,7 +43,7 @@ fun HighlightedText(
 
             withStyle(
                 SpanStyle(
-                    background = Color.Red
+                    background = MaterialTheme.colorScheme.primary
                 )
             ) {
                 append(fullText.substring(index, index + query.length))

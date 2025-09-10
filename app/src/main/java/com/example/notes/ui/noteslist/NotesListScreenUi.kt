@@ -4,6 +4,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -128,7 +129,8 @@ fun NotesListScreenUi(
                 title = {
                     Text(
                         text = "Moje notatki",
-                        fontWeight = FontWeight.SemiBold
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onBackground
                     )
                 },
                 actions = {
@@ -155,10 +157,12 @@ fun NotesListScreenUi(
                         }
 
                         DropdownMenu(
+                            modifier = Modifier.background(MaterialTheme.colorScheme.surfaceVariant),
                             expanded = dropDownMenuExpanded,
                             onDismissRequest = { dropDownMenuExpanded = false }
                         ) {
                             DropdownMenuItem(
+                                modifier = Modifier.background(MaterialTheme.colorScheme.surfaceVariant),
                                 text = { Text("Ustawienia") },
                                 onClick = {
                                     dropDownMenuExpanded = false
@@ -238,6 +242,7 @@ fun NotesListScreenUi(
                         Box {
                             Card(
                                 modifier = Modifier
+
                                     .fillMaxWidth()
                                     .height(225.dp)
                                     .padding(vertical = 3.dp)
@@ -263,7 +268,8 @@ fun NotesListScreenUi(
                             ) {
                                 Text(
                                     text = note.content,
-                                    modifier = Modifier.padding(12.dp)
+                                    modifier = Modifier.padding(12.dp),
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                             }
 
@@ -290,7 +296,7 @@ fun NotesListScreenUi(
                             textAlign = TextAlign.Center,
                             style = TextStyle(
                                 fontSize = 15.sp,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
                             ),
                             modifier = Modifier.padding(vertical = 6.dp)
                         )
@@ -341,12 +347,18 @@ fun DeleteConfirmationDialog(onDismiss: () -> Unit, onConfirm: () -> Unit, amoun
         },
         confirmButton = {
             TextButton(onClick = { onConfirm() }) {
-                Text("Usuń")
+                Text(
+                    text = "Usuń",
+                    color = MaterialTheme.colorScheme.onSurface
+                )
             }
         },
         dismissButton = {
             TextButton(onClick = { onDismiss() }) {
-                Text("Anuluj")
+                Text(
+                    text = "Anuluj",
+                    color = MaterialTheme.colorScheme.onSurface
+                )
             }
         }
     )

@@ -19,18 +19,21 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.notes.ui.components.NumberSelector
 import com.example.notes.ui.components.ThemePickerShape
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -38,6 +41,7 @@ fun SettingsScreenUi(
     modifier: Modifier = Modifier,
     viewModel: SettingsViewModel
 ) {
+
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -62,11 +66,15 @@ fun SettingsScreenUi(
         }
 
     ) { innerPadding ->
-        val fontSizelist: List<Int> = listOf(16,18,20,22,24,26)
+        val fontSizelist: List<Int> = listOf(12,14,16,18,20,22)
 
-        var selectedOption by remember { mutableStateOf("Zgodny z motywem urządzenia") }
+        val context = LocalContext.current
 
-        val radioOptions = listOf("Zgodny z motywem urządzenia", "Jasny", "Ciemny")
+        val currentTheme by viewModel.getThemeFlow(context).collectAsState(initial = "system")
+
+        var selectedOption by remember(currentTheme) { mutableStateOf(currentTheme) }
+
+        val radioOptions = listOf("system", "light", "dark")
 
         Column(
             modifier = Modifier
@@ -107,20 +115,31 @@ fun SettingsScreenUi(
             Column(
                 modifier = Modifier.padding(start = 30.dp)
             ) {
-                radioOptions.forEach { option ->
+                radioOptions.forEach() { option ->
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { selectedOption = option }
+                            .clickable {
+                                selectedOption = option
+                                viewModel.setTheme(context = context, theme = option)
+                            }
                             .padding(2.dp)
                     ) {
                         RadioButton(
                             selected = (option == selectedOption),
-                            onClick = { selectedOption = option }
+                            onClick = {
+                                selectedOption = option
+                                viewModel.setTheme(context = context, theme = option)
+                            }
                         )
                         Text(
-                            text = option,
+                            text = when (option) {
+                                "system" -> "Zgodny z motywem urządzenia"
+                                "light" -> "Jasny"
+                                "dark" -> "Ciemny"
+                                else -> ""
+                            },
                             fontSize = 16.sp
                         )
                     }
@@ -139,41 +158,21 @@ fun SettingsScreenUi(
                         .padding(end = 30.dp)
                         .fillMaxWidth()
                 ) {
-                    ThemePickerShape(
-                        size = 60.dp,
-                        cornerRadius = 10.dp,
-                        color1 = Color.Cyan,
-                        color2 = Color.Gray,
-                        borderColor = Color.LightGray,
-                        borderWidth = 3.dp
-                    )
-
-                    ThemePickerShape(
-                        size = 60.dp,
-                        cornerRadius = 10.dp,
-                        color1 = Color.Cyan,
-                        color2 = Color.Gray,
-                        borderColor = Color.LightGray,
-                        borderWidth = 3.dp
-                    )
-
-                    ThemePickerShape(
-                        size = 60.dp,
-                        cornerRadius = 10.dp,
-                        color1 = Color.Cyan,
-                        color2 = Color.Gray,
-                        borderColor = Color.LightGray,
-                        borderWidth = 3.dp
-                    )
-
-                    ThemePickerShape(
-                        size = 60.dp,
-                        cornerRadius = 10.dp,
-                        color1 = Color.Cyan,
-                        color2 = Color.Gray,
-                        borderColor = Color.LightGray,
-                        borderWidth = 3.dp
-                    )
+                    listOf("theme1", "theme2", "theme3", "theme4").forEach { theme ->
+                        ThemePickerShape(
+                            size = 60.dp,
+                            cornerRadius = 10.dp,
+                            color1 = Color.Cyan,
+                            color2 = Color.Gray,
+                            borderColor = Color.LightGray,
+                            borderWidth = 3.dp,
+                            selected = selectedOption == theme,
+                            modifier = Modifier.clickable {
+                                selectedOption = theme
+                                viewModel.setTheme(context = context, theme = theme)
+                            }
+                        )
+                    }
                 }
             }
         }
