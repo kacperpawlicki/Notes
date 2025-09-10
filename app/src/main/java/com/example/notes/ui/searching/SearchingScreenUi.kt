@@ -112,8 +112,8 @@ fun SearchingScreenUi(
     }
 
     LaunchedEffect(refreshTrigger) {
-        focusRequester.requestFocus()
         viewModel.searchNotes(query.text)
+        focusRequester.requestFocus()
     }
 
 
@@ -227,14 +227,24 @@ fun SearchingScreenUi(
 
                         }
 
-                        HighlightedText(
-                            fullText = viewModel.getTitleText(note),
-                            query = query.text,
-                            textAlign = TextAlign.Center,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Normal,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
+                        if (note.title != "") {
+                            HighlightedText(
+                                fullText = viewModel.getTitleText(note),
+                                query = query.text,
+                                textAlign = TextAlign.Center,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Normal,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        } else {
+                            Text(
+                                text =  viewModel.getTitleText(note),
+                                textAlign = TextAlign.Center,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Normal,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
 
                         Text(
                             text = viewModel.getModificationTimeText(note),

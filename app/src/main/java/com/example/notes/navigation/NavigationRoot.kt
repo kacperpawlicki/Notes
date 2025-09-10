@@ -23,6 +23,8 @@ import com.example.notes.ui.searching.SearchingScreenUi
 import com.example.notes.ui.searching.SearchingViewModel
 import com.example.notes.ui.searchresultnotedetail.SearchResultNoteDetailScreenUi
 import com.example.notes.ui.searchresultnotedetail.SearchResultNoteDetailViewModel
+import com.example.notes.ui.settings.SettingsScreenUi
+import com.example.notes.ui.settings.SettingsViewModel
 import kotlinx.serialization.Serializable
 
 
@@ -36,6 +38,9 @@ data class NoteDetailScreen(val id: Int?, val from: String): NavKey
 data class SearchResultNoteDetailScreen(val id: Int, val query: String): NavKey
 @Serializable
 data object SearchingScreen: NavKey
+
+@Serializable
+data object SettingsScreen: NavKey
 
 @Composable
 fun NavigationRoot(
@@ -92,6 +97,9 @@ fun NavigationRoot(
                             },
                             onSearchClick = {
                                 backStack.add(SearchingScreen)
+                            },
+                            onSettingsClick = {
+                                backStack.add(SettingsScreen)
                             }
                         )
                     }
@@ -139,6 +147,17 @@ fun NavigationRoot(
                             onNoteEditClick = {
                                 backStack.add(NoteDetailScreen(id = key.id, from = "SearchResultScreen"))
                             }
+                        )
+                    }
+                }
+                is SettingsScreen -> {
+                    NavEntry(key = key) {
+                        SettingsScreenUi(
+                            viewModel = SettingsViewModel(
+                                onNavigateBack = {
+                                    backStack.removeAt(backStack.lastIndex)
+                                }
+                            )
                         )
                     }
                 }

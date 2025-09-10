@@ -29,6 +29,8 @@ import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Card
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -64,7 +66,8 @@ fun NotesListScreenUi(
     viewModel: NotesListViewModel,
     onNoteClick: (Int) -> Unit,
     onNoteAddClick: () -> Unit,
-    onSearchClick: () -> Unit
+    onSearchClick: () -> Unit,
+    onSettingsClick: () -> Unit
 ) {
     val notes by viewModel.notes.collectAsState(initial = emptyList())
 
@@ -92,6 +95,8 @@ fun NotesListScreenUi(
     var isDeletingConfirmationDialogVisible by remember { mutableStateOf(false) }
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+
+    var dropDownMenuExpanded by remember { mutableStateOf(false) }
 
 
 
@@ -137,13 +142,31 @@ fun NotesListScreenUi(
                             contentDescription = "Wyszukaj notatkę"
                         )
                     }
-                    IconButton(
-                        onClick = {}
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.MoreVert,
-                            contentDescription = "Więcej opcji"
-                        )
+                    Box{
+                        IconButton(
+                            onClick = {
+                                dropDownMenuExpanded = true
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.MoreVert,
+                                contentDescription = "Więcej opcji"
+                            )
+                        }
+
+                        DropdownMenu(
+                            expanded = dropDownMenuExpanded,
+                            onDismissRequest = { dropDownMenuExpanded = false }
+                        ) {
+                            DropdownMenuItem(
+                                text = { Text("Ustawienia") },
+                                onClick = {
+                                    dropDownMenuExpanded = false
+                                    onSettingsClick()
+                                }
+                            )
+                        }
+
                     }
                 },
                 scrollBehavior = scrollBehavior
