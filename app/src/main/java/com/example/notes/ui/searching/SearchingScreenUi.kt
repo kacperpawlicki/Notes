@@ -25,6 +25,7 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -133,7 +134,7 @@ fun SearchingScreenUi(
                             .focusRequester(focusRequester),
                         textStyle = TextStyle(
                             fontSize = 21.sp,
-                            color = MaterialTheme.colorScheme.onSurface,
+                            color = MaterialTheme.colorScheme.onBackground,
                             fontWeight = FontWeight.SemiBold
                         ),
                         singleLine = true,
@@ -145,7 +146,7 @@ fun SearchingScreenUi(
                                         "Wyszukaj...",
                                         style = TextStyle(
                                             fontSize = 21.sp,
-                                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
                                         ),
                                         fontWeight = FontWeight.SemiBold
                                     )
@@ -165,7 +166,8 @@ fun SearchingScreenUi(
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
-                            contentDescription = "Wróć"
+                            contentDescription = "Wróć",
+                            tint = MaterialTheme.colorScheme.onBackground
                         )
                     }
                 },
@@ -175,7 +177,8 @@ fun SearchingScreenUi(
                     ) {
                         Icon(
                             imageVector = Icons.Default.MoreVert,
-                            contentDescription = "Więcej opcji"
+                            contentDescription = "Więcej opcji",
+                            tint = MaterialTheme.colorScheme.onBackground
                         )
                     }
                 }
@@ -275,6 +278,7 @@ fun SearchingScreenUi(
                         }
                     },
                     shape = CircleShape,
+                    elevation = FloatingActionButtonDefaults.elevation(0.dp),
                     modifier = Modifier
                         .size(40.dp),
                     containerColor = MaterialTheme.colorScheme.surfaceVariant
@@ -282,6 +286,7 @@ fun SearchingScreenUi(
                     Icon(
                         imageVector = Icons.Default.KeyboardArrowUp,
                         contentDescription = "Podjedź do góry",
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer
                     )
                 }
             }

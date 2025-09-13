@@ -34,6 +34,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -141,7 +142,8 @@ fun NotesListScreenUi(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Search,
-                            contentDescription = "Wyszukaj notatkę"
+                            contentDescription = "Wyszukaj notatkę",
+                            tint = MaterialTheme.colorScheme.onBackground
                         )
                     }
                     Box{
@@ -152,7 +154,8 @@ fun NotesListScreenUi(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.MoreVert,
-                                contentDescription = "Więcej opcji"
+                                contentDescription = "Więcej opcji",
+                                tint = MaterialTheme.colorScheme.onBackground
                             )
                         }
 
@@ -163,7 +166,12 @@ fun NotesListScreenUi(
                         ) {
                             DropdownMenuItem(
                                 modifier = Modifier.background(MaterialTheme.colorScheme.surfaceVariant),
-                                text = { Text("Ustawienia") },
+                                text = {
+                                    Text(
+                                        text = "Ustawienia",
+                                        color = MaterialTheme.colorScheme.onBackground
+                                    )
+                                },
                                 onClick = {
                                     dropDownMenuExpanded = false
                                     onSettingsClick()
@@ -187,7 +195,7 @@ fun NotesListScreenUi(
                         onClick = {
                             onNoteAddClick()
                         },
-
+                        elevation = FloatingActionButtonDefaults.elevation(0.dp)
                         ) {
                         Icon(
                             imageVector = Icons.Default.Add,
@@ -320,6 +328,7 @@ fun NotesListScreenUi(
                         }
                     },
                     shape = CircleShape,
+                    elevation = FloatingActionButtonDefaults.elevation(0.dp),
                     modifier = Modifier
                         .size(40.dp),
                     containerColor = MaterialTheme.colorScheme.surfaceVariant
@@ -327,6 +336,7 @@ fun NotesListScreenUi(
                         Icon(
                             imageVector = Icons.Default.KeyboardArrowUp,
                             contentDescription = "Podjedź do góry",
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer
                         )
                 }
             }

@@ -69,7 +69,7 @@ fun NoteDetailScreenUi(
                         modifier = Modifier.fillMaxWidth(),
                         textStyle = TextStyle(
                             fontSize = 21.sp,
-                            color = MaterialTheme.colorScheme.onSurface,
+                            color = MaterialTheme.colorScheme.onBackground,
                             fontWeight = FontWeight.SemiBold
                         ),
                         singleLine = true,
@@ -84,7 +84,7 @@ fun NoteDetailScreenUi(
                                         "Tytuł",
                                         style = TextStyle(
                                             fontSize = 21.sp,
-                                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
                                         ),
                                         fontWeight = FontWeight.SemiBold
                                     )
@@ -104,7 +104,8 @@ fun NoteDetailScreenUi(
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Wróć"
+                            contentDescription = "Wróć",
+                            tint = MaterialTheme.colorScheme.onBackground
                         )
                     }
                 },
@@ -114,7 +115,8 @@ fun NoteDetailScreenUi(
                     ) {
                         Icon(
                             imageVector = Icons.Default.MoreVert,
-                            contentDescription = "Więcej opcji"
+                            contentDescription = "Więcej opcji",
+                            tint = MaterialTheme.colorScheme.onBackground
                         )
                     }
                 }
@@ -135,6 +137,7 @@ fun NoteDetailScreenUi(
 
             Column(
                 modifier = Modifier
+                    .background(MaterialTheme.colorScheme.surfaceContainerHighest)
                     .fillMaxSize()
                     .verticalScroll(scrollState)
                     .clickable(

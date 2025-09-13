@@ -44,7 +44,7 @@ fun NumberSelector(
             Text(
                 text = selectedNumber.toString(),
                 modifier = Modifier.weight(1f),
-                color = MaterialTheme.colorScheme.onSurface
+                color = MaterialTheme.colorScheme.onBackground
             )
             Spacer(modifier = Modifier.width(4.dp))
             Icon(
@@ -53,7 +53,7 @@ fun NumberSelector(
                     else Icons.Default.KeyboardArrowDown,
                 contentDescription = null,
                 modifier = Modifier.size(16.dp),
-                tint = MaterialTheme.colorScheme.onSurface
+                tint = MaterialTheme.colorScheme.onBackground
             )
         }
 
@@ -63,7 +63,12 @@ fun NumberSelector(
         ) {
             numbers.forEach { number ->
                 DropdownMenuItem(
-                    text = { Text(number.toString()) },
+                    text = {
+                        Text(
+                            text = number.toString(),
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
+                           },
                     onClick = {
                         onNumberSelected(number)
                         expanded = false

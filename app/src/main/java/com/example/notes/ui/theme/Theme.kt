@@ -22,7 +22,8 @@ private val DarkColorScheme = darkColorScheme(
     primaryContainer = Color(0xFFBD7C4E), //dodawanie
     surfaceVariant = Color(0xFF2F2E2E), //scrollup
     surfaceContainerHighest = Color(0xFF424040), //tlo card
-    surfaceContainerHigh = Color(0xFF424040) //tlo dialogu
+    surfaceContainerHigh = Color(0xFF424040), //tlo dialogu
+    onPrimaryContainer = Color(0xFFD2D0CE) // kolor ikony plusa
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -35,20 +36,22 @@ private val LightColorScheme = lightColorScheme(
     primaryContainer = Color(0xFFCEC7BB), //dodawanie
     surfaceVariant = Color(0xFF807B7B), //scrollup
     surfaceContainerHighest = Color(0xFFFFFDE9), //tlo card
-    surfaceContainerHigh = Color(0xFF807B7B) //tlo dialogu
+    surfaceContainerHigh = Color(0xFF807B7B), //tlo dialogu
+    onPrimaryContainer = Color(0xFF1C1B1B) // kolor ikony plusa
 )
 
 private val Theme1ColorScheme = lightColorScheme(
     primary = Color(0xFFCBBCB2), //checkboxy i kursor
     background = Color(0xFFC8D9E6), // tlo
     surface = Color(0xFFC8D9E6), //tlo tego u gory
-    surfaceContainer = Color(0xFF567C8D), //tlo tego u gory po scrollu
-    onSurface = Color(0xFF1F1F1F), //tekst
-    onBackground = Color(0xFF1F1F1F), //tekst tytulu
+    surfaceContainer = Color(0xFFA1BBC6), //tlo tego u gory po scrollu
+    onSurface = Color(0xFF343434), //tekst
+    onBackground = Color(0xFF494949), //tekst tytulu
     primaryContainer = Color(0xFF567C8D), //dodawanie
-    surfaceVariant = Color(0xFF567C8D), //scrollup
+    surfaceVariant = Color(0xFF6D95A5), //scrollup
     surfaceContainerHighest = Color(0xFFFFFFFF), //tlo card
-    surfaceContainerHigh = Color(0xFFBDBDBD), //tlo dialogu
+    surfaceContainerHigh = Color(0xFFD7D3D3), //tlo dialogu
+    onPrimaryContainer = Color(0xFFD2D0CE) // kolor ikony plusa
 )
 
 private val Theme2ColorScheme = lightColorScheme(
@@ -61,33 +64,36 @@ private val Theme2ColorScheme = lightColorScheme(
     primaryContainer = Color(0xFF344C3D), //dodawanie
     surfaceVariant = Color(0xFF344C3D), //scrollup
     surfaceContainerHighest = Color(0xFFBFCFBB), //tlo card
-    surfaceContainerHigh = Color(0xFF424040) //tlo dialogu
+    surfaceContainerHigh = Color(0xFFD0CFCF), //tlo dialogu
+    onPrimaryContainer = Color(0xFFA5A5A2) // kolor ikony plusa
 )
 
-private val Theme3ColorScheme = lightColorScheme(
-    primary = Color(0xFFBB6224), //checkboxy i kursor
-    background = Color(0xFF45C94B), // tlo
-    surface = Color(0xFF1C1B1B), //tlo tego u gory
-    surfaceContainer = Color(0xFF131213), //tlo tego u gory po scrollu
+private val Theme3ColorScheme = darkColorScheme(
+    primary = Color(0xFFC98982), //checkboxy i kursor
+    background = Color(0xFF8E4949), // tlo
+    surface = Color(0xFF8E4949), //tlo tego u gory
+    surfaceContainer = Color(0xFF6D3A3A), //tlo tego u gory po scrollu
     onSurface = Color(0xFFD2D0CE), //tekst
     onBackground = Color(0xFFE8E6E6), //tekst tytulu
-    primaryContainer = Color(0xFF1F0B23), //dodawanie
-    surfaceVariant = Color(0xFF2F2E2E), //scrollup
-    surfaceContainerHighest = Color(0xFF424040), //tlo card
-    surfaceContainerHigh = Color(0xFF424040) //tlo dialogu
+    primaryContainer = Color(0xFF6F3232), //dodawanie
+    surfaceVariant = Color(0xFF6F3232), //scrollup
+    surfaceContainerHighest = Color(0xFF997070), //tlo card
+    surfaceContainerHigh = Color(0xFF979595), //tlo dialogu
+    onPrimaryContainer = Color(0xFFD2D0CE) // kolor ikony plusa
 )
 
 private val Theme4ColorScheme = lightColorScheme(
-    primary = Color(0xFFBB6224), //checkboxy i kursor
-    background = Color(0xFF928626), // tlo
-    surface = Color(0xFF1C1B1B), //tlo tego u gory
-    surfaceContainer = Color(0xFF131213), //tlo tego u gory po scrollu
-    onSurface = Color(0xFFD2D0CE), //tekst
+    primary = Color(0xFFD173E3), //checkboxy i kursor
+    background = Color(0xFFBE9EC4), // tlo
+    surface = Color(0xFFBE9EC4), //tlo tego u gory
+    surfaceContainer = Color(0xFF9E7EA5), //tlo tego u gory po scrollu
+    onSurface = Color(0xFF525151), //tekst
     onBackground = Color(0xFFE8E6E6), //tekst tytulu
-    primaryContainer = Color(0xFF1F0B23), //dodawanie
-    surfaceVariant = Color(0xFF2F2E2E), //scrollup
-    surfaceContainerHighest = Color(0xFF424040), //tlo card
-    surfaceContainerHigh = Color(0xFF424040) //tlo dialogu
+    primaryContainer = Color(0xFF906B97), //dodawanie
+    surfaceVariant = Color(0xFF906B97), //scrollup
+    surfaceContainerHighest = Color(0xFFE6CCEE), //tlo card
+    surfaceContainerHigh = Color(0xFFC9C9C9), //tlo dialogu
+    onPrimaryContainer = Color(0xFFD2D0CE) // kolor ikony plusa
 )
 
 @Composable

@@ -14,6 +14,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -49,7 +50,8 @@ fun SettingsScreenUi(
                 title = {
                     Text(
                         text = "Ustawienia",
-                        fontWeight = FontWeight.SemiBold
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onBackground
                     )
                 },
                 navigationIcon = {
@@ -58,7 +60,8 @@ fun SettingsScreenUi(
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Wróć"
+                            contentDescription = "Wróć",
+                            tint = MaterialTheme.colorScheme.onBackground
                         )
                     }
                 }
@@ -162,9 +165,27 @@ fun SettingsScreenUi(
                         ThemePickerShape(
                             size = 60.dp,
                             cornerRadius = 10.dp,
-                            color1 = Color.Cyan,
-                            color2 = Color.Gray,
-                            borderColor = Color.LightGray,
+                            color1 = when (theme) {
+                                "theme1" -> Color(0xFFC8D9E6)
+                                "theme2" -> Color(0xFF8EA58C)
+                                "theme3" -> Color(0xFF8E4949)
+                                "theme4" -> Color(0xFFBE9EC4)
+                                else ->  Color(0xFFFFFFFF)
+                            },
+                            color2 = when (theme) {
+                                "theme1" -> Color(0xFFFFFFFF)
+                                "theme2" -> Color(0xFFBFCFBB)
+                                "theme3" -> Color(0xFF997070)
+                                "theme4" -> Color(0xFFE6CCEE)
+                                else ->  Color(0xFFFFFFFF)
+                            },
+                            borderColor = when (theme) {
+                                "theme1" -> Color(0xFFD7E3EE)
+                                "theme2" -> Color(0xFF879A84)
+                                "theme3" -> Color(0xFFBB7C7C)
+                                "theme4" -> Color(0xFFB793BB)
+                                else ->  Color(0xFFFFFFFF)
+                            },
                             borderWidth = 3.dp,
                             selected = selectedOption == theme,
                             modifier = Modifier.clickable {
