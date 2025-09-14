@@ -32,7 +32,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.notes.ui.components.NumberSelector
 import com.example.notes.ui.components.ThemePickerShape
 
 
@@ -69,7 +68,7 @@ fun SettingsScreenUi(
         }
 
     ) { innerPadding ->
-        val fontSizelist: List<Int> = listOf(12,14,16,18,20,22)
+        //val fontSizelist: List<Int> = listOf(12,14,16,18,20,22)
 
         val context = LocalContext.current
 
@@ -85,25 +84,25 @@ fun SettingsScreenUi(
         ) {
             HorizontalDivider()
 
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceAround,
-                modifier = Modifier.padding(top = 30.dp, start = 20.dp)
-            ) {
-                Text(
-                    text = "Rozmiar czcionki:",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.SemiBold
-                )
-
-                NumberSelector(
-                    selectedNumber = 16,
-                    numbers = fontSizelist,
-                    onNumberSelected = {},
-                    modifier = Modifier.padding(start = 16.dp, bottom = 10.dp)
-                )
-            }
-
+//            Row(
+//                verticalAlignment = Alignment.CenterVertically,
+//                horizontalArrangement = Arrangement.SpaceAround,
+//                modifier = Modifier.padding(top = 30.dp, start = 20.dp)
+//            ) {
+//                Text(
+//                    text = "Rozmiar czcionki:",
+//                    fontSize = 20.sp,
+//                    fontWeight = FontWeight.SemiBold
+//                )
+//
+//                NumberSelector(
+//                    selectedNumber = 16,
+//                    numbers = fontSizelist,
+//                    onNumberSelected = {},
+//                    modifier = Modifier.padding(start = 16.dp, bottom = 10.dp)
+//                )
+//            }
+//
             Spacer(modifier = Modifier.size(40.dp))
 
             Text(

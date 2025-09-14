@@ -19,6 +19,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -54,9 +56,12 @@ import kotlinx.coroutines.launch
 fun NoteDetailScreenUi(
     modifier: Modifier = Modifier,
     viewModel: NoteDetailViewModel,
+    onSettingsClick: () -> Unit
 ) {
 
     val note by viewModel.note.collectAsState()
+
+    var dropDownMenuExpanded by remember { mutableStateOf(false) }
 
     BackHandler {
         viewModel.viewModelScope.launch {
@@ -116,14 +121,38 @@ fun NoteDetailScreenUi(
                     }
                 },
                 actions = {
-                    IconButton(
-                        onClick = {}
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.MoreVert,
-                            contentDescription = "Więcej opcji",
-                            tint = MaterialTheme.colorScheme.onBackground
-                        )
+                    Box{
+                        IconButton(
+                            onClick = {
+                                dropDownMenuExpanded = true
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.MoreVert,
+                                contentDescription = "Więcej opcji",
+                                tint = MaterialTheme.colorScheme.onBackground
+                            )
+                        }
+
+                        DropdownMenu(
+                            modifier = Modifier.background(MaterialTheme.colorScheme.surfaceVariant),
+                            expanded = dropDownMenuExpanded,
+                            onDismissRequest = { dropDownMenuExpanded = false }
+                        ) {
+                            DropdownMenuItem(
+                                modifier = Modifier.background(MaterialTheme.colorScheme.surfaceVariant),
+                                text = {
+                                    Text(
+                                        text = "Ustawienia",
+                                        color = MaterialTheme.colorScheme.onBackground
+                                    )
+                                },
+                                onClick = {
+                                    dropDownMenuExpanded = false
+                                    onSettingsClick()
+                                }
+                            )
+                        }
                     }
                 }
             )

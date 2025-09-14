@@ -114,7 +114,10 @@ fun NavigationRoot(
                                     backStack.removeAt(backStack.lastIndex)
                                 },
                                 from = key.from
-                            )
+                            ),
+                            onSettingsClick = {
+                                backStack.add(SettingsScreen)
+                            }
                         )
                     }
                 }
@@ -129,6 +132,9 @@ fun NavigationRoot(
                             ),
                             onNoteClick = { noteId, query ->
                                 backStack.add(SearchResultNoteDetailScreen(noteId, query))
+                            },
+                            onSettingsClick = {
+                                backStack.add(SettingsScreen)
                             }
                         )
                     }

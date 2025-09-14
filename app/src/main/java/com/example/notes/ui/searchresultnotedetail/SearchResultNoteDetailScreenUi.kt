@@ -95,7 +95,7 @@ fun SearchResultNoteDetailScreenUi(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .background(MaterialTheme.colorScheme.surface)
+                .background(MaterialTheme.colorScheme.surfaceContainerHighest)
         ) {
             HorizontalDivider()
 

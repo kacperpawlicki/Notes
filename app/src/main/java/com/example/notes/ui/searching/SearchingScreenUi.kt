@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,6 +25,8 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Card
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
@@ -71,6 +74,7 @@ fun SearchingScreenUi(
     modifier: Modifier = Modifier,
     viewModel: SearchingViewModel,
     onNoteClick: (Int, String) -> Unit,
+    onSettingsClick: () -> Unit
 ) {
     val notes by viewModel.notes.collectAsState(initial = emptyList())
 
@@ -103,6 +107,7 @@ fun SearchingScreenUi(
 
     val focusRequester = remember { FocusRequester() }
 
+    var dropDownMenuExpanded by remember { mutableStateOf(false) }
 
     val lifecycleOwner = LocalLifecycleOwner.current
     var refreshTrigger by remember { mutableIntStateOf(0) }
@@ -173,14 +178,38 @@ fun SearchingScreenUi(
                     }
                 },
                 actions = {
-                    IconButton(
-                        onClick = {}
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.MoreVert,
-                            contentDescription = "Więcej opcji",
-                            tint = MaterialTheme.colorScheme.onBackground
-                        )
+                    Box{
+                        IconButton(
+                            onClick = {
+                                dropDownMenuExpanded = true
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.MoreVert,
+                                contentDescription = "Więcej opcji",
+                                tint = MaterialTheme.colorScheme.onBackground
+                            )
+                        }
+
+                        DropdownMenu(
+                            modifier = Modifier.background(MaterialTheme.colorScheme.surfaceVariant),
+                            expanded = dropDownMenuExpanded,
+                            onDismissRequest = { dropDownMenuExpanded = false }
+                        ) {
+                            DropdownMenuItem(
+                                modifier = Modifier.background(MaterialTheme.colorScheme.surfaceVariant),
+                                text = {
+                                    Text(
+                                        text = "Ustawienia",
+                                        color = MaterialTheme.colorScheme.onBackground
+                                    )
+                                },
+                                onClick = {
+                                    dropDownMenuExpanded = false
+                                    onSettingsClick()
+                                }
+                            )
+                        }
                     }
                 }
             )
