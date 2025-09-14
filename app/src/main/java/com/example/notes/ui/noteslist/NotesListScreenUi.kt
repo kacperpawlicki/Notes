@@ -2,6 +2,7 @@ package com.example.notes.ui.noteslist
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
@@ -85,8 +86,7 @@ fun NotesListScreenUi(
 
     val scrollUpFabVisible by remember {
         derivedStateOf {
-            !(listState.firstVisibleItemIndex == 0 &&
-                    listState.firstVisibleItemScrollOffset == 0)
+            !(listState.firstVisibleItemIndex == 0 && listState.firstVisibleItemScrollOffset == 0) && listState.isScrollInProgress
         }
     }
 
@@ -188,8 +188,12 @@ fun NotesListScreenUi(
             if (!isDeleting) {
                 AnimatedVisibility(
                     visible = addingFabVisible,
-                    enter = fadeIn(),
-                    exit = fadeOut()
+                    enter = fadeIn(
+                        animationSpec = tween(200, 800)
+                    ),
+                    exit = fadeOut(
+                        animationSpec = tween(200)
+                    )
                 ) {
                     FloatingActionButton(
                         onClick = {
@@ -314,8 +318,12 @@ fun NotesListScreenUi(
 
             AnimatedVisibility(
                 visible = scrollUpFabVisible,
-                enter = fadeIn(),
-                exit = fadeOut(),
+                enter = fadeIn(
+                    animationSpec = tween(200)
+                ),
+                exit = fadeOut(
+                    animationSpec = tween(200, 1800)
+                ),
                 modifier = Modifier
                     .padding(innerPadding)
                     .padding(16.dp)
