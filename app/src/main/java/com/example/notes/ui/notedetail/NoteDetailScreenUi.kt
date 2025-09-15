@@ -1,15 +1,16 @@
 package com.example.notes.ui.notedetail
 
-
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -30,7 +31,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,6 +43,8 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
@@ -62,6 +67,57 @@ fun NoteDetailScreenUi(
     val note by viewModel.note.collectAsState()
 
     var dropDownMenuExpanded by remember { mutableStateOf(false) }
+
+    val scrollState = rememberScrollState()
+    val focusRequester = remember { FocusRequester() }
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val density = LocalDensity.current
+
+    val lineHeight = 24.sp
+    val lineHeightPx = with(density) { lineHeight.toPx() }
+
+    var textFieldValue by remember {
+        mutableStateOf(TextFieldValue(text = ""))
+    }
+
+    textFieldValue = textFieldValue.copy(text = note.content)
+
+    val insets = WindowInsets.ime
+    val keyboardHeight by remember {
+        derivedStateOf {
+            insets.getBottom(density)
+        }
+    }
+
+    val visibleLinesAboveKeyboard = if (keyboardHeight > 0) {
+        val screenHeightPx = with(density) {
+            LocalConfiguration.current.screenHeightDp.dp.toPx()
+        }
+        val topBarAndPaddingPx = with(density) { 120.dp.toPx() }
+        val availableHeightAboveKeyboard = screenHeightPx - keyboardHeight - topBarAndPaddingPx
+
+        (availableHeightAboveKeyboard / lineHeightPx).toInt() - 3 // -3 linie na margines
+    } else {
+        0
+    }
+
+    LaunchedEffect(textFieldValue.selection.start, keyboardHeight) {
+        if (keyboardHeight > 0 && textFieldValue.selection.start >= 0) {
+
+            val cursorPosition = textFieldValue.selection.start
+            val lines = textFieldValue.text.substring(0, cursorPosition).count { it == '\n' }
+            val cursorYPosition = lines * lineHeightPx
+
+            val minVisiblePosition = cursorYPosition - lineHeightPx * visibleLinesAboveKeyboard
+
+            if (minVisiblePosition > scrollState.value) {
+                scrollState.animateScrollTo(minVisiblePosition.toInt().coerceAtLeast(0))
+            }
+        }
+    }
+
+    if (viewModel.isNoteNew()) focusRequester.requestFocus()
+
 
     BackHandler {
         viewModel.viewModelScope.launch {
@@ -167,17 +223,6 @@ fun NoteDetailScreenUi(
         ) {
             HorizontalDivider()
 
-            val scrollState = rememberScrollState()
-            val focusRequester = remember { FocusRequester() }
-            val keyboardController = LocalSoftwareKeyboardController.current
-
-            var textFieldValue by remember {
-                mutableStateOf(TextFieldValue(text = ""))
-            }
-
-            textFieldValue = textFieldValue.copy(text = note.content)
-
-            val lineHeight = 24.sp
             Column(
                 modifier = Modifier
                     .background(MaterialTheme.colorScheme.surfaceContainerHighest)
@@ -190,7 +235,6 @@ fun NoteDetailScreenUi(
                             val lines = note.content.split('\n')
 
                             if (clickedLine >= lines.size) {
-
                                 val newLines = lines.toMutableList()
                                 repeat(clickedLine - lines.size) {
                                     newLines.add("")
@@ -211,7 +255,6 @@ fun NoteDetailScreenUi(
                                 viewModel.updateNoteContent(newText)
 
                             } else {
-
                                 val cursorPosition = lines.take(clickedLine + 1)
                                         .sumOf { it.length + 1 } - 1
 
@@ -233,9 +276,7 @@ fun NoteDetailScreenUi(
                         .fillMaxSize()
                         .padding(horizontal = 16.dp)
                         .imePadding()
-                        .focusRequester(focusRequester)
-                        //.background(Color.Red)
-                        ,
+                        .focusRequester(focusRequester),
                     value = textFieldValue,
                     onValueChange = { newContent ->
                         textFieldValue = newContent

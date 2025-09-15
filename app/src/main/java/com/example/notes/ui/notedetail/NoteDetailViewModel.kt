@@ -84,4 +84,8 @@ class NoteDetailViewModel(
         val now = LocalDateTime.now()
         _note.value = _note.value.copy(modificationDate = now)
     }
+
+    fun isNoteNew(): Boolean {
+        return noteId == null
+    }
 }
