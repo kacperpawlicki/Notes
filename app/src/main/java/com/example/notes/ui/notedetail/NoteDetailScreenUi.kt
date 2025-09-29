@@ -1,5 +1,7 @@
 package com.example.notes.ui.notedetail
 
+import android.content.Context
+import android.view.inputmethod.InputMethodManager
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -37,15 +39,23 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -54,6 +64,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -271,12 +282,40 @@ fun NoteDetailScreenUi(
             ) {
                 Spacer(modifier = modifier.height(16.dp))
 
+                val context = LocalContext.current
+                val localView = LocalView.current
+                val coroutineScope = rememberCoroutineScope()
+
                 BasicTextField(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(horizontal = 16.dp)
                         .imePadding()
-                        .focusRequester(focusRequester),
+                        .focusRequester(focusRequester)
+                        .onPreviewKeyEvent { keyEvent ->
+                            if (keyEvent.key == Key.Enter && keyEvent.type == KeyEventType.KeyDown) {
+                                val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                                imm.restartInput(localView)
+
+                                coroutineScope.launch {
+                                    delay(10)
+                                    val currentText = textFieldValue.text
+                                    val cursorPosition = textFieldValue.selection.start
+
+                                    val newText = currentText.substring(0, cursorPosition) + "\n" +
+                                            currentText.substring(cursorPosition)
+
+                                    textFieldValue = TextFieldValue(
+                                        text = newText,
+                                        selection = TextRange(cursorPosition + 1)
+                                    )
+                                    viewModel.updateNoteContent(newText)
+                                }
+                                true
+                            } else {
+                                false
+                            }
+                        },
                     value = textFieldValue,
                     onValueChange = { newContent ->
                         textFieldValue = newContent
