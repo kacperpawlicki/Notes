@@ -68,7 +68,7 @@ class NoteDetailViewModel(
             }
         }
     }
-//TODO do zmiany - przy nowej notatce nie przezyje rotacji ekranu
+
     fun updateNoteTitle(newTitle: String) {
         _note.value = _note.value.copy(title = newTitle)
         noteStarted = true
