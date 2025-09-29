@@ -83,6 +83,9 @@ fun NoteDetailScreenUi(
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
     val density = LocalDensity.current
+    val context = LocalContext.current
+    val localView = LocalView.current
+    val coroutineScope = rememberCoroutineScope()
 
     val lineHeight = 24.sp
     val lineHeightPx = with(density) { lineHeight.toPx() }
@@ -281,10 +284,6 @@ fun NoteDetailScreenUi(
                     }
             ) {
                 Spacer(modifier = modifier.height(16.dp))
-
-                val context = LocalContext.current
-                val localView = LocalView.current
-                val coroutineScope = rememberCoroutineScope()
 
                 BasicTextField(
                     modifier = Modifier
